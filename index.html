@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#183c31"><meta name="description" content="Rantau Creative Management System">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon-192.png">
+<title>Rantau Creative | RCMS</title><link rel="stylesheet" href="/style.css"></head>
+<body><header><div class="brand"><img src="/rcms-logo.jpg" alt="Logo RCMS"><div><b>RANTAU CREATIVE</b><small>Management System</small></div></div><div class="head-actions"><button id="installApp" class="install hidden">Pasang RCMS</button><span id="userbadge">ORDER PORTAL</span></div></header>
+<nav><button data-view="order" class="selected">Tempahan Online</button><button data-view="admin">RCMS Admin</button></nav>
+<main>
+<section id="order" class="view">
+<div class="intro"><p class="eyebrow">ONLINE ORDER</p><h1>Buat Tempahan</h1><p>Hantar maklumat tempahan kepada Rantau Creative. Akaun pelanggan tidak diperlukan.</p></div>
+<form id="orderForm" class="card">
+<div class="grid">
+<label>Nama pelanggan *<input name="name" required placeholder="Nama penuh"></label>
+<label>Nama syarikat<input name="company" placeholder="Jika ada"></label>
+<label>No. telefon / WhatsApp *<input name="phone" required placeholder="01XXXXXXXX"></label>
+<label>Emel<input name="email" type="email" placeholder="Jika ada"></label>
+<label>Jenis produk *<select name="product" required><option value="">Pilih produk</option><option>Banner</option><option>Bunting</option><option>Business Card</option><option>Rubber Stamp</option><option>Sticker</option><option>T-Shirt</option><option>Flyer / Brochure</option><option>Design Grafik</option><option>Lain-lain</option></select></label>
+<label>Saiz / spesifikasi<input name="specification" placeholder="Contoh: 2 kaki × 6 kaki"></label>
+<label>Kuantiti *<input name="quantity" type="number" min="1" value="1" required></label>
+<label>Tarikh diperlukan<input name="neededDate" type="date"></label>
+<label class="wide">Pautan artwork / fail reka bentuk<input name="artworkUrl" type="url" placeholder="Pautan Google Drive (jika ada)"></label>
+<label class="wide">Catatan<textarea name="notes" rows="4" placeholder="Warna, bahan, arahan khas dan sebagainya"></textarea></label>
+</div><button class="primary">Hantar Tempahan</button><p id="orderResult" role="status"></p><small>Harga dan tempoh siap akan disahkan oleh pihak Rantau Creative.</small>
+</form></section>
+<section id="admin" class="view hidden"><div class="intro"><p class="eyebrow">INTERNAL SYSTEM</p><h1>RCMS Dashboard</h1><p>Pengurusan tempahan dan operasi Rantau Creative.</p></div>
+<div id="loginPanel" class="card"><h2>Log masuk staf</h2><form id="loginForm"><label>Emel<input name="email" type="email" required></label><label>Kata laluan<input name="password" type="password" required></label><button class="primary">Log Masuk</button><p id="loginResult" role="status"></p></form></div>
+<div id="dashboard" class="hidden"><div class="stats"><div class="stat"><small>Jumlah tempahan</small><b id="total">0</b></div><div class="stat"><small>Menunggu</small><b id="pending">0</b></div><div class="stat"><small>Dalam proses</small><b id="progress">0</b></div><div class="stat"><small>Siap</small><b id="done">0</b></div></div><div class="toolbar"><input id="search" placeholder="Cari nombor / pelanggan"><button id="refresh">Muat semula</button><button id="logout">Log keluar</button></div><div id="orderList" class="orders"></div><div id="notifications" class="card"><h2>Notifikasi RCMS</h2><div id="notificationList"></div></div></div>
+</section></main><footer>© Rantau Creative · RCMS</footer><script src="/app.js"></script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(console.error));}</script></body></html>

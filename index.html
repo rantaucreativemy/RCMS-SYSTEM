@@ -1,29 +1,244 @@
 <!doctype html>
-<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#183c31"><meta name="description" content="Rantau Creative Management System">
-<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon-192.png">
-<title>Rantau Creative | RCMS</title><link rel="stylesheet" href="/style.css"></head>
-<body><header><div class="brand"><img src="/rcms-logo.jpg" alt="Logo RCMS"><div><b>RANTAU CREATIVE</b><small>Management System</small></div></div><div class="head-actions"><button id="installApp" class="install hidden">Pasang RCMS</button><span id="userbadge">ORDER PORTAL</span></div></header>
-<nav><button data-view="order" class="selected">Tempahan Online</button><button data-view="admin">RCMS Admin</button></nav>
-<main>
-<section id="order" class="view">
-<div class="intro"><p class="eyebrow">ONLINE ORDER</p><h1>Buat Tempahan</h1><p>Hantar maklumat tempahan kepada Rantau Creative. Akaun pelanggan tidak diperlukan.</p></div>
-<form id="orderForm" class="card">
-<div class="grid">
-<label>Nama pelanggan *<input name="name" required placeholder="Nama penuh"></label>
-<label>Nama syarikat<input name="company" placeholder="Jika ada"></label>
-<label>No. telefon / WhatsApp *<input name="phone" required placeholder="01XXXXXXXX"></label>
-<label>Emel<input name="email" type="email" placeholder="Jika ada"></label>
-<label>Jenis produk *<select name="product" required><option value="">Pilih produk</option><option>Banner</option><option>Bunting</option><option>Business Card</option><option>Rubber Stamp</option><option>Sticker</option><option>T-Shirt</option><option>Flyer / Brochure</option><option>Design Grafik</option><option>Lain-lain</option></select></label>
-<label>Saiz / spesifikasi<input name="specification" placeholder="Contoh: 2 kaki × 6 kaki"></label>
-<label>Kuantiti *<input name="quantity" type="number" min="1" value="1" required></label>
-<label>Tarikh diperlukan<input name="neededDate" type="date"></label>
-<label class="wide">Pautan artwork / fail reka bentuk<input name="artworkUrl" type="url" placeholder="Pautan Google Drive (jika ada)"></label>
-<label class="wide">Catatan<textarea name="notes" rows="4" placeholder="Warna, bahan, arahan khas dan sebagainya"></textarea></label>
-</div><button class="primary">Hantar Tempahan</button><p id="orderResult" role="status"></p><small>Harga dan tempoh siap akan disahkan oleh pihak Rantau Creative.</small>
-</form></section>
-<section id="admin" class="view hidden"><div class="intro"><p class="eyebrow">INTERNAL SYSTEM</p><h1>RCMS Dashboard</h1><p>Pengurusan tempahan dan operasi Rantau Creative.</p></div>
-<div id="loginPanel" class="card"><h2>Log masuk staf</h2><form id="loginForm"><label>Emel<input name="email" type="email" required></label><label>Kata laluan<input name="password" type="password" required></label><button class="primary">Log Masuk</button><p id="loginResult" role="status"></p></form></div>
-<div id="dashboard" class="hidden"><div class="stats"><div class="stat"><small>Jumlah tempahan</small><b id="total">0</b></div><div class="stat"><small>Menunggu</small><b id="pending">0</b></div><div class="stat"><small>Dalam proses</small><b id="progress">0</b></div><div class="stat"><small>Siap</small><b id="done">0</b></div></div><div class="toolbar"><input id="search" placeholder="Cari nombor / pelanggan"><button id="refresh">Muat semula</button><button id="logout">Log keluar</button></div><div id="orderList" class="orders"></div><div id="notifications" class="card"><h2>Notifikasi RCMS</h2><div id="notificationList"></div></div></div>
-</section></main><footer>© Rantau Creative · RCMS</footer><script src="/app.js"></script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(console.error));}</script></body></html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17251f"><title>RCMS | Rantau Creative Management System</title>
+<style>
+:root{--bg:#f4f5f1;--paper:#fff;--ink:#24332b;--muted:#849087;--line:#e6eae4;--green:#244b3b;--green2:#18372b;--gold:#b99a61;--soft:#edf3ee;--red:#a94e48;--shadow:0 5px 22px #1b30240b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.shell{min-height:100vh}.side{position:fixed;inset:0 auto 0 0;width:252px;background:#17251f;color:#dce6df;padding:19px 14px;display:flex;flex-direction:column;z-index:10;transition:.2s}
+.brand{display:flex;align-items:center;justify-content:center;padding:2px 4px 18px;border-bottom:1px solid #ffffff1c}.brandlogo{display:block;width:168px;max-width:100%;height:auto;object-fit:contain;border-radius:4px}
+.workspace{margin:16px 2px 18px;padding:11px;border:1px solid #ffffff22;border-radius:8px;font-size:11px}.dot{display:inline-block;width:7px;height:7px;background:#a8c29f;border-radius:50%;margin-right:7px}.navlabel{font-size:9px;letter-spacing:1.6px;color:#809287;font-weight:800;padding:0 11px 7px}.navlabel.gap{padding-top:17px}
+.nav{overflow:auto}.nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#bac8bf;text-align:left;padding:10px 12px;border-radius:7px;margin:1px 0;font-size:12px}.nav button span{width:17px;text-align:center;font-size:15px}.nav button.active,.nav button:hover{background:#2b483a;color:#fff;box-shadow:inset 3px 0 var(--gold)}.nav button em{font-style:normal;margin-left:auto;background:#456452;padding:2px 7px;border-radius:20px;font-size:9px}
+.userbox{margin-top:auto;border-top:1px solid #ffffff1c;padding:14px 5px 0;display:flex;align-items:center;gap:9px}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#dce9df;color:#244b3b;font-size:10px;font-weight:800}.userbox b,.userbox small{display:block}.userbox b{font-size:11px;color:#fff}.userbox small{font-size:9px;color:#9eafa4;margin-top:3px}
+.main{margin-left:252px;min-height:100vh}.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:5}.crumb{font-size:11px;color:#8a958d}.crumb b{color:#35463c}.topright{display:flex;align-items:center;gap:12px}.topright button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:8px 10px;color:#637268}.topright .avatar{background:var(--green);color:#fff}
+.content{max-width:1500px;margin:auto;padding:30px 32px 50px}.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin-bottom:23px}.eyebrow{font-size:9px;letter-spacing:1.8px;color:#a08350;font-weight:800;margin:0 0 7px}.heading h1{font-size:27px;letter-spacing:-.7px;margin:0 0 5px}.sub{font-size:11px;color:var(--muted);margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #dfe5de;background:#fff;color:#415148;border-radius:7px;padding:10px 13px;font-size:11px;font-weight:650}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.primary:hover{background:var(--green2)}.btn.danger{color:var(--red);border-color:#efd9d7}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.metric,.panel{background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}.metric{padding:16px 18px}.metric .label{font-size:10px;color:#7f8b82;font-weight:650}.metric strong{display:block;font-size:28px;letter-spacing:-1px;margin:10px 0 2px}.metric small{font-size:9px;color:#9aa49c}.metric .ico{float:right;width:30px;height:30px;border-radius:8px;background:var(--soft);display:grid;place-items:center;color:var(--green)}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:14px;margin-bottom:15px}.panel{padding:18px}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.panelhead h2{font-size:13px;margin:0 0 4px}.panelhead p{font-size:10px;color:#99a39b;margin:0}.link{border:0;background:none;color:#567660;font-size:10px;font-weight:700}
+table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;font-size:8px;letter-spacing:.8px;color:#9aa49c;padding:10px 8px;border-bottom:1px solid var(--line)}td{font-size:10px;padding:12px 8px;border-bottom:1px solid #f0f2ef;color:#526057}tbody tr:last-child td{border-bottom:0}.empty{text-align:center;color:#9ba59e;padding:28px 10px}.pill{display:inline-block;border-radius:20px;padding:4px 8px;font-size:9px;background:#f7f0e4;color:#987b43}.pill.green{background:#eaf3ec;color:#4b7858}.pill.blue{background:#eaf1f6;color:#5e7f98}.pill.red{background:#f8eae8;color:#a6534b}
+.shortcut{display:flex;align-items:center;gap:10px;width:100%;border:0;border-top:1px solid #eff1ee;background:#fff;text-align:left;padding:12px 0}.shortcut .tile{width:31px;height:31px;border-radius:8px;background:#eff4f0;color:#42634f;display:grid;place-items:center}.shortcut b,.shortcut small{display:block}.shortcut b{font-size:10px}.shortcut small{font-size:9px;color:#9aa49d;margin-top:3px}.shortcut .arr{margin-left:auto;color:#9aa49d}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.pipeline div{background:#f7f8f6;border-radius:7px;padding:12px}.pipeline b{font-size:20px;display:block}.pipeline span{font-size:9px;color:#8b968e}
+.toolbar{display:flex;gap:9px;align-items:center;margin-bottom:13px}.search{width:min(300px,100%);border:1px solid var(--line);border-radius:7px;padding:9px 11px;font-size:10px;background:#fff}.tablewrap{overflow:auto}.muted{color:var(--muted)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}.field{display:block;font-size:10px;font-weight:650;color:#58665d;margin-bottom:13px}.field input,.field select,.field textarea{display:block;width:100%;border:1px solid #dfe5df;border-radius:6px;padding:10px;margin-top:6px;font-size:11px;background:#fff;color:#344239}.field.wide{grid-column:1/-1}.section{padding:20px 22px;border-bottom:1px solid var(--line)}.section h2{font-size:13px;margin:0 0 5px}.section p{font-size:10px;color:#98a29b;margin:0 0 16px}.formfoot{padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:10px}.formfoot small{font-size:10px;color:#929e95}
+.hidden{display:none!important}.modalback{position:fixed;inset:0;background:#101a16a8;display:grid;place-items:center;z-index:30;padding:15px}.modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:12px;box-shadow:0 20px 60px #0003}.modalhead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalhead h2{font-size:15px;margin:0}.modalbody{padding:19px 20px}.modalfoot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.close{border:0;background:none;font-size:20px;color:#758178}
+.toast{position:fixed;right:20px;bottom:20px;background:#203c2f;color:#fff;padding:12px 16px;border-radius:8px;font-size:11px;box-shadow:var(--shadow);z-index:50}
+.portal{max-width:850px;margin:auto}.portalintro{background:#203c31;color:#fff;border-radius:10px;padding:23px;margin-bottom:14px}.portalintro h2{margin:0 0 6px}.portalintro p{margin:0;color:#d1ddd5;font-size:11px}
+.footer{text-align:center;font-size:9px;color:#9aa49c;padding:25px 0}
+@media(max-width:1050px){.side{width:220px}.main{margin-left:220px}.content{padding:24px 20px}.top{padding:0 20px}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:700px){.side{transform:translateX(-100%);width:260px;box-shadow:8px 0 30px #0002}.side.open{transform:translateX(0)}.main{margin:0}.top{height:57px;padding:0 12px}.hamb{display:inline-block!important}.crumb{margin-left:9px;margin-right:auto}.content{padding:20px 13px}.heading{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}.cards{gap:8px}.metric{padding:13px}.metric strong{font-size:24px}.panel{padding:14px}.pipeline{grid-template-columns:repeat(3,1fr)}.formgrid{grid-template-columns:1fr}.field.wide{grid-column:auto}.section{padding:16px}.formfoot{align-items:flex-start;flex-direction:column}.formfoot .btn{width:100%}.hamb{display:block;border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 9px}}
+.hamb{display:none}
+.authscreen{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 15% 10%,#345b46 0,#17251f 42%,#101914 100%)}
+.authcard{width:min(440px,100%);background:#fff;border-radius:16px;padding:30px;box-shadow:0 24px 80px #0005}
+.authbrand{display:flex;align-items:center;justify-content:center;margin-bottom:25px}.authbrand .brandlogo{width:220px;max-width:85%;height:auto;object-fit:contain}
+.authcard h1{font-size:24px;margin:0 0 6px}.authcard>p{color:#849087;font-size:12px;margin:0 0 22px}.authcard .field{font-size:11px}.authcard .field input{padding:13px;font-size:13px}.authcard .btn{width:100%;padding:13px;margin-top:5px}.authdivider{display:flex;align-items:center;gap:12px;color:#9aa49c;font-size:10px;margin:18px 0}.authdivider:before,.authdivider:after{content:"";height:1px;background:#e6eae4;flex:1}.authhint{font-size:10px;color:#9aa49c;line-height:1.6;margin-top:15px}.customer-mode .side,.customer-mode .top{display:none}.customer-mode .main{margin:0}.customer-mode .content{padding-top:26px}.customer-mode [data-goto="dashboard"]{display:none!important}
+</style></head>
+<body>
+<section class="authscreen" id="authScreen">
+ <form class="authcard" id="loginForm">
+  <div class="authbrand"><div style="font-family:Georgia,serif;font-size:54px;letter-spacing:5px;font-weight:600">RCMS</div></div>
+  <h1>Admin Sign In</h1><p>Log masuk untuk mengakses RCMS Workspace.</p>
+  <label class="field">Nama pengguna<input name="username" autocomplete="username" required placeholder="Masukkan nama pengguna"></label>
+  <label class="field">Kata laluan<input name="password" type="password" autocomplete="current-password" required placeholder="Masukkan kata laluan"></label>
+  <button class="btn primary" type="submit">Log Masuk ke RCMS →</button>
+  <div class="authdivider">ATAU</div>
+  <button class="btn" type="button" id="publicOrderBtn">Buat Tempahan sebagai Pelanggan</button>
+  <div class="authhint">Pelanggan tidak perlu akaun atau kata laluan. Akses admin prototaip ini menggunakan demo login. Untuk keselamatan sebenar, pengesahan mesti dipindahkan ke server sebelum diterbitkan kepada umum.</div>
+ </form>
+</section>
+<div class="shell hidden" id="appShell">
+<aside class="side" id="side">
+ <div class="brand"><div style="font-family:Georgia,serif;font-size:34px;letter-spacing:4px;font-weight:600">RCMS</div><small style="display:block;font-size:9px;letter-spacing:1px;margin-top:5px">RANTAU CREATIVE MANAGEMENT SYSTEM</small></div>
+ <div class="workspace"><span class="dot"></span> Rantau Creative　⌄</div>
+ <nav class="nav">
+ <div class="navlabel">WORKSPACE</div>
+ <button class="active" data-page="dashboard"><span>▦</span> Dashboard</button>
+ <button data-page="orders"><span>▤</span> Sales Orders <em id="orderCount">0</em></button>
+ <button data-page="customers"><span>♙</span> Customers</button>
+ <button data-page="quotations"><span>▧</span> Quotations</button>
+ <button data-page="invoices"><span>▤</span> Sales Invoices</button>
+ <button data-page="payments"><span>＄</span> Receipts & Payments</button>
+ <div class="navlabel gap">OPERATIONS</div>
+ <button data-page="jobs"><span>▣</span> Printing Jobs</button>
+ <button data-page="inventory"><span>▦</span> Services & Pricing</button>
+ <button data-page="suppliers"><span>♧</span> Suppliers</button>
+ <button data-page="employees"><span>♙</span> Employees</button>
+ <div class="navlabel gap">ANALYSIS</div>
+ <button data-page="reports"><span>▥</span> Reports</button>
+ <button data-page="settings"><span>⚙</span> Settings</button>
+ </nav>
+ <div class="userbox"><div class="avatar">RC</div><div><b>RCMS Workspace</b><small>Local prototype</small></div></div>
+</aside>
+<main class="main">
+ <header class="top"><button class="hamb" id="hamb">☰</button><div class="crumb">Rantau Creative　/　<b id="crumb">Dashboard</b></div><div class="topright"><button id="portalBtn">↗ Order Portal</button><button id="exportBtn">⇩ Export</button><button id="logoutBtn">Log Keluar</button><div class="avatar">RC</div></div></header>
+ <div class="content">
+  <section id="dashboard" class="page">
+   <div class="heading"><div><p class="eyebrow">OVERVIEW</p><h1>Dashboard</h1><p class="sub">Selamat datang ke Rantau Creative Management System.</p></div><div class="actions"><button class="btn" id="goPortal">↗ Online Order Portal</button><button class="btn primary" data-create="orders">＋ New Sales Order</button></div></div>
+   <div class="cards">
+    <article class="metric"><span class="ico">▤</span><div class="label">TOTAL ORDERS</div><strong id="mOrders">0</strong><small>Semua tempahan direkodkan</small></article>
+    <article class="metric"><span class="ico">◷</span><div class="label">PENDING ORDERS</div><strong id="mPending">0</strong><small>Menunggu tindakan</small></article>
+    <article class="metric"><span class="ico">⚙</span><div class="label">IN PRODUCTION</div><strong id="mProgress">0</strong><small>Sedang diproses</small></article>
+    <article class="metric"><span class="ico">✓</span><div class="label">COMPLETED</div><strong id="mDone">0</strong><small>Siap / diserahkan</small></article>
+   </div>
+   <div class="grid">
+    <section class="panel"><div class="panelhead"><div><h2>Recent Sales Orders</h2><p>Tempahan terkini yang diterima</p></div><button class="link" data-goto="orders">View all →</button></div><div class="tablewrap"><table><thead><tr><th>ORDER NO.</th><th>CUSTOMER</th><th>PRODUCT</th><th>STATUS</th><th>DATE</th></tr></thead><tbody id="recent"><tr><td colspan="5" class="empty">Belum ada tempahan.</td></tr></tbody></table></div></section>
+    <section class="panel"><div class="panelhead"><div><h2>Quick Actions</h2><p>Akses pantas modul utama</p></div></div>
+     <button class="shortcut" data-create="orders"><span class="tile">＋</span><span><b>Create Sales Order</b><small>Daftar pesanan baharu</small></span><span class="arr">→</span></button>
+     <button class="shortcut" data-create="customers"><span class="tile">♙</span><span><b>Add Customer</b><small>Daftar pelanggan</small></span><span class="arr">→</span></button>
+     <button class="shortcut" data-create="quotations"><span class="tile">▧</span><span><b>New Quotation</b><small>Sediakan sebut harga</small></span><span class="arr">→</span></button>
+     <button class="shortcut" data-goto="reports"><span class="tile">▥</span><span><b>View Reports</b><small>Semak operasi</small></span><span class="arr">→</span></button>
+    </section>
+   </div>
+   <section class="panel"><div class="panelhead"><div><h2>Order Pipeline</h2><p>Status keseluruhan tempahan</p></div></div><div class="pipeline"><div><b id="p1">0</b><span>Menunggu</span></div><div><b id="p2">0</b><span>Sebut harga</span></div><div><b id="p3">0</b><span>Disahkan</span></div><div><b id="p4">0</b><span>Dalam proses</span></div><div><b id="p5">0</b><span>Siap</span></div></div></section>
+  </section>
+  <section id="module" class="page hidden"><div class="heading"><div><p class="eyebrow" id="modEyebrow">WORKSPACE</p><h1 id="modTitle">Sales Orders</h1><p class="sub" id="modSub"></p></div><div class="actions"><button class="btn primary" id="createBtn">＋ Create New</button></div></div><section class="panel"><div class="panelhead"><div><h2 id="tableTitle">Records</h2><p id="tableSub">Manage your records</p></div></div><div class="toolbar"><input class="search" id="search" placeholder="Search records..."><button class="btn" id="clearSearch">Clear</button></div><div class="tablewrap" id="tableArea"></div></section></section>
+  <section id="portal" class="page hidden portal"><div class="heading"><div><p class="eyebrow">CUSTOMER PORTAL</p><h1>Online Order</h1><p class="sub">Pelanggan boleh membuat tempahan tanpa akaun.</p></div><button class="btn" data-goto="dashboard">← Dashboard</button></div><div class="portalintro"><h2>Tempahan Rantau Creative</h2><p>Isi maklumat di bawah. Pihak kami akan menghubungi anda untuk pengesahan harga dan tempoh siap.</p></div>
+   <form id="portalForm" class="panel">
+    <div class="section"><h2>Customer Information</h2><p>Maklumat untuk dihubungi.</p><div class="formgrid">
+     <label class="field">Nama pelanggan *<input name="name" required placeholder="Nama penuh"></label><label class="field">Nama syarikat<input name="company" placeholder="Jika ada"></label>
+     <label class="field">No. telefon / WhatsApp *<input name="phone" required placeholder="01XXXXXXXX"></label><label class="field">Emel<input name="email" type="email" placeholder="Jika ada"></label>
+    </div></div>
+    <div class="section"><h2>Order Details</h2><p>Maklumat produk dan spesifikasi tempahan.</p><div class="formgrid">
+     <label class="field">Jenis produk *<select name="product" required><option value="">Pilih produk</option><option>Banner</option><option>Bunting</option><option>Business Card</option><option>Rubber Stamp</option><option>Sticker</option><option>T-Shirt</option><option>Flyer / Brochure</option><option>Design Grafik</option><option>DTF Printing</option><option>Sublimation</option><option>Photostat / Printing A4</option><option>Lain-lain</option></select></label>
+     <label class="field">Saiz / spesifikasi<input name="specification" placeholder="Contoh: 2 kaki × 6 kaki"></label><label class="field">Kuantiti *<input name="quantity" type="number" min="1" value="1" required></label><label class="field">Tarikh diperlukan<input name="neededDate" type="date"></label>
+     <label class="field wide">Pautan artwork / fail reka bentuk<input name="artworkUrl" type="url" placeholder="Pautan Google Drive (jika ada)"></label><label class="field wide">Catatan<textarea name="notes" rows="3" placeholder="Warna, bahan, arahan khas..."></textarea></label>
+    </div></div><div class="formfoot"><small>Harga dan tempoh siap akan disahkan oleh Rantau Creative.</small><button class="btn primary">Hantar Tempahan →</button></div>
+   </form>
+  </section>
+  <div class="footer">RCMS · RANTAU CREATIVE MANAGEMENT SYSTEM · Prototype build</div>
+ </div>
+</main></div>
+<div id="modalRoot"></div><div id="toast" class="toast hidden"></div>
+<script>
+const $=id=>document.getElementById(id);
+const modules={
+ orders:{title:'Sales Orders',eyebrow:'SALES',desc:'Urus semua pesanan pelanggan dari satu tempat.',fields:[['customer','Nama pelanggan','text',true],['phone','No. telefon','text',true],['product','Jenis produk','text',true],['specification','Saiz / spesifikasi','text',false],['quantity','Kuantiti','number',true],['status','Status','select',true,['Menunggu','Sebutharga','Disahkan','Dalam Proses','Siap','Diserahkan']],['neededDate','Tarikh diperlukan','date',false],['amount','Jumlah (RM)','number',false],['notes','Catatan','textarea',false]]},
+ customers:{title:'Customers',eyebrow:'SALES',desc:'Database pelanggan Rantau Creative.',fields:[['name','Nama pelanggan','text',true],['company','Nama syarikat','text',false],['phone','No. telefon','text',true],['email','Emel','email',false],['address','Alamat','textarea',false]]},
+ quotations:{title:'Quotations',eyebrow:'SALES',desc:'Quotation dijana automatik apabila tempahan diterima; semak harga sebelum dihantar.',fields:[['customer','Nama pelanggan','text',true],['description','Butiran quotation','text',true],['amount','Jumlah (RM)','number',true],['status','Status','select',true,['Draft','Sent','Accepted','Rejected']],['validUntil','Sah sehingga','date',false]]},
+ invoices:{title:'Sales Invoices',eyebrow:'FINANCE',desc:'Invois dijana apabila Printing Job ditandakan Siap; semak jumlah sebelum dikeluarkan.',fields:[['customer','Nama pelanggan','text',true],['description','Butiran invois','text',true],['amount','Jumlah (RM)','number',true],['status','Status','select',true,['Unpaid','Partially Paid','Paid']],['dueDate','Tarikh akhir','date',false]]},
+ payments:{title:'Receipts & Payments',eyebrow:'FINANCE',desc:'Rekod penerimaan wang pelanggan.',fields:[['customer','Nama pelanggan','text',true],['reference','No. rujukan','text',true],['amount','Jumlah (RM)','number',true],['method','Kaedah bayaran','select',true,['Tunai','Online Transfer','QR Pay','Kad']],['date','Tarikh','date',true]]},
+ jobs:{title:'Printing Jobs',eyebrow:'OPERATIONS',desc:'Pantau tugasan design, cetakan dan finishing.',fields:[['job','Nama tugasan','text',true],['orderCode','No. Sales Order (jika ada)','text',false],['customer','Pelanggan','text',true],['assigned','PIC / Staff','text',false],['status','Status kerja','select',true,['Belum mula','Design','Printing','Finishing','QC','Siap']],['deadline','Deadline','date',false],['notes','Catatan','textarea',false]]},
+ inventory:{title:'Services & Pricing',eyebrow:'SERVICES',desc:'Senarai servis yang Rantau Creative tawarkan. Design dibuat sendiri di rumah dan kerja cetakan diuruskan dengan kedai printing luar. Tiada rekod stok bahan diperlukan.',fields:[['item','Nama servis','text',true],['unit','Unit / cara kira','text',true],['price','Harga (RM)','number',true],['notes','Catatan harga','text',false]]},
+ suppliers:{title:'Suppliers',eyebrow:'OPERATIONS',desc:'Rekod pembekal bahan dan perkhidmatan.',fields:[['name','Nama pembekal','text',true],['contact','Nama pegawai','text',false],['phone','No. telefon','text',true],['email','Emel','email',false],['notes','Catatan','textarea',false]]},
+ employees:{title:'Employees',eyebrow:'OPERATIONS',desc:'Senarai pekerja dan tanggungjawab.',fields:[['name','Nama pekerja','text',true],['role','Jawatan','text',true],['phone','No. telefon','text',false],['email','Emel','email',false],['status','Status','select',true,['Aktif','Tidak aktif']]]},
+ reports:{title:'Reports',eyebrow:'ANALYSIS',desc:'Ringkasan prestasi operasi berdasarkan rekod dalam prototaip ini.',fields:[]},
+ settings:{title:'Settings',eyebrow:'SYSTEM',desc:'Tetapan asas RCMS.',fields:[]}
+};
+let active='dashboard',data=load();
+const starterInventory=[
+ {item:'Cas Design',sku:'SRV-DESIGN',unit:'per design',price:30.00,notes:'Harga permulaan untuk design ringkas; design kompleks boleh dicaj lebih.'},
+ {item:'Banner',sku:'PRD-BANNER',unit:'per kaki persegi (sqft)',price:3.00,notes:'Harga anggaran bermula RM3.00/sqft; cetakan outsource, semak kos kedai sebelum quotation.'},
+ {item:'Bunting',sku:'PRD-BUNTING',unit:'per unit',price:25.00,notes:'Harga anggaran bermula RM25/unit termasuk design ringkas; ikut saiz dan finishing.'},
+ {item:'Business Card',sku:'PRD-CARD',unit:'per 100 keping',price:25.00,notes:'Harga anggaran bermula RM25/100 keping; ikut material dan kemasan.'},
+ {item:'Sticker',sku:'PRD-STICKER',unit:'per sqft',price:4.00,notes:'Harga anggaran bermula RM4.00/sqft; ikut jenis sticker, bentuk potongan dan kuantiti.'},
+ {item:'Flyer',sku:'PRD-FLYER',unit:'per 100 keping',price:35.00,notes:'Harga anggaran bermula RM35/100 keping; ikut saiz, kertas dan cetakan.'},
+ {item:'Brochure',sku:'PRD-BROCHURE',unit:'per 100 keping',price:80.00,notes:'Harga anggaran bermula RM80/100 keping; ikut lipatan, saiz dan kertas.'},
+ {item:'Rubber Stamp',sku:'PRD-STAMP',unit:'per unit',price:20.00,notes:'Harga anggaran bermula RM20/unit; ikut saiz dan jenis cop.'},
+ {item:'T-Shirt Printing',sku:'PRD-TSHIRT',unit:'per helai',price:35.00,notes:'Harga anggaran bermula RM35/helai; ikut jenis baju, saiz dan kaedah cetakan.'},
+ {item:'Printing A4',sku:'PRD-A4',unit:'per helai',price:0.50,notes:'Harga anggaran bermula RM0.50/helai; ikut warna, sebelah/dua belah dan kertas.'},
+ {item:'Tempahan Printing Lain',sku:'PRD-OTHER',unit:'ikut tempahan',price:0,notes:'Cetakan diuruskan oleh kedai luar. Masukkan harga selepas semak quotation.'}
+];
+// Tiada stok bahan mentah: Rantau Creative menyediakan design dan mengurus cetakan melalui kedai luar.
+// Harga ialah kadar permulaan anggaran Malaysia dan boleh diedit mengikut kos sebenar pembekal.
+const oldInventory=data.inventory||[];
+data.inventory=starterInventory.map(x=>({...x,id:oldInventory.find(y=>y.sku===x.sku)?.id||id()}));save();
+
+function load(){try{return JSON.parse(localStorage.getItem('rcms_data_v1'))||{}}catch{return {}}}
+function save(){localStorage.setItem('rcms_data_v1',JSON.stringify(data))}
+function rows(k){return data[k]||[]}
+function setRows(k,v){data[k]=v;save();refresh()}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(v){return 'RM '+Number(v||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function toast(t){$('toast').textContent=t;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2600)}
+function go(page){active=page;document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$(page==='dashboard'?'dashboard':page==='portal'?'portal':'module').classList.remove('hidden');$('crumb').textContent=page==='dashboard'?'Dashboard':page==='portal'?'Online Order':modules[page].title;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('side').classList.remove('open');if(page!=='dashboard'&&page!=='portal')renderModule(page);refresh()}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
+document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
+$('hamb').onclick=()=>$('side').classList.toggle('open');$('portalBtn').onclick=$('goPortal').onclick=()=>go('portal');
+document.querySelectorAll('[data-create]').forEach(b=>b.onclick=()=>openForm(b.dataset.create));
+$('createBtn').onclick=()=>openForm(active);
+$('search').oninput=()=>renderModule(active);$('clearSearch').onclick=()=>{$('search').value='';renderModule(active)};
+$('exportBtn').onclick=()=>exportAll();
+function refresh(){
+ const o=rows('orders'),count=o.length,p=o.filter(x=>x.status==='Menunggu').length,w=o.filter(x=>x.status==='Dalam Proses'||x.status==='Printing'||x.status==='Design').length,d=o.filter(x=>x.status==='Siap'||x.status==='Diserahkan').length;
+ $('mOrders').textContent=count;$('mPending').textContent=p;$('mProgress').textContent=w;$('mDone').textContent=d;$('orderCount').textContent=count;
+ const statuses=['Menunggu','Sebutharga','Disahkan','Dalam Proses','Siap'];statuses.forEach((s,i)=>$('p'+(i+1)).textContent=o.filter(x=>x.status===s).length);
+ $('recent').innerHTML=o.slice(-6).reverse().map(x=>`<tr><td><b>${esc(x.code||'SO-'+x.id.slice(-5).toUpperCase())}</b></td><td>${esc(x.customer)}</td><td>${esc(x.product)}</td><td>${pill(x.status)}</td><td>${esc(x.created||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">Belum ada tempahan. Gunakan Online Order Portal untuk mula.</td></tr>';
+}
+function pill(s){let c=['Siap','Diserahkan','Paid','Accepted'].includes(s)?'green':['Dalam Proses','Printing','Design','Sent'].includes(s)?'blue':['Rejected','Tidak aktif'].includes(s)?'red':'';return `<span class="pill ${c}">${esc(s||'—')}</span>`}
+function renderModule(k){
+ const m=modules[k];$('modEyebrow').textContent=m.eyebrow;$('modTitle').textContent=m.title;$('modSub').textContent=m.desc;$('tableTitle').textContent=m.title+' Records';$('tableSub').textContent=rows(k).length+' rekod disimpan pada peranti ini';
+ $('createBtn').classList.toggle('hidden',['reports','settings'].includes(k));
+ if(k==='reports'){let total=rows('orders').reduce((a,x)=>a+Number(x.amount||0),0),inv=rows('invoices').reduce((a,x)=>a+Number(x.amount||0),0);$('tableArea').innerHTML=`<div class="cards"><article class="metric"><div class="label">SALES ORDERS</div><strong>${rows('orders').length}</strong></article><article class="metric"><div class="label">ORDER VALUE</div><strong style="font-size:20px">${money(total)}</strong></article><article class="metric"><div class="label">INVOICES</div><strong>${rows('invoices').length}</strong></article><article class="metric"><div class="label">INVOICE VALUE</div><strong style="font-size:20px">${money(inv)}</strong></article></div><p class="muted">Laporan ini dikira daripada rekod demo yang disimpan dalam browser ini.</p>`;return}
+ if(k==='settings'){$('tableArea').innerHTML=`
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px">
+  <div class="panel"><div class="muted" style="font-size:10px">PERANTI 01</div><h2 style="margin:8px 0">Tablet Utama</h2><b>RCMS-TABLET</b><p class="muted" style="font-size:10px">Akses utama · Pemilik</p><span class="pill green">Slot dirancang</span></div>
+  <div class="panel"><div class="muted" style="font-size:10px">PERANTI 02</div><h2 style="margin:8px 0">Laptop</h2><b>RCMS-LAPTOP</b><p class="muted" style="font-size:10px">Akses kerja · Pemilik</p><span class="pill green">Slot dirancang</span></div>
+  <div class="panel"><div class="muted" style="font-size:10px">PERANTI 03</div><h2 style="margin:8px 0">Coming Soon</h2><b>RCMS-DEVICE-03</b><p class="muted" style="font-size:10px">Belum didaftarkan</p><span class="pill">Belum aktif</span></div>
+ </div>
+ <div class="panel" style="line-height:1.8"><b>Pengurusan akses peranti</b><p class="muted" style="font-size:11px">Reka bentuk akses 3 peranti telah ditetapkan. Setiap peranti akan mempunyai identiti/login tersendiri dan berkongsi data RCMS melalui storan awan.</p><p><span class="pill">Belum disambungkan ke cloud</span></p><p class="muted" style="font-size:11px">Status sekarang: data masih disimpan dalam browser peranti ini sahaja. Senarai peranti di atas ialah tetapan rancangan, bukan pengesahan peranti sebenar. Penyegerakan tablet-laptop hanya akan aktif selepas backend, login dan polisi keselamatan disediakan.</p><button class="btn" onclick="exportAll()">Export semua data (JSON)</button> <button class="btn danger" onclick="resetAll()">Padam semua data demo</button></div>`;return}
+ const q=($('search').value||'').toLowerCase(),list=rows(k).filter(x=>JSON.stringify(x).toLowerCase().includes(q));
+ const cols=({orders:['code','customer','product','quantity','status','created'],customers:['name','company','phone','email'],quotations:['quoteNo','orderCode','customer','description','amount','status'],invoices:['invoiceNo','orderCode','customer','description','amount','status'],payments:['customer','reference','amount','method','date'],jobs:['job','orderCode','customer','assigned','status','deadline'],inventory:['item','unit','price','notes'],suppliers:['name','contact','phone','email'],employees:['name','role','phone','status']})[k];
+ const labels=({code:'ORDER NO.',quoteNo:'QUOTATION NO.',invoiceNo:'INVOICE NO.',orderCode:'SALES ORDER',customer:'CUSTOMER',product:'PRODUCT',quantity:'QTY',status:'STATUS',created:'DATE',name:'NAME',company:'COMPANY',phone:'PHONE',email:'EMAIL',description:'DESCRIPTION',amount:'AMOUNT',reference:'REFERENCE',method:'METHOD',date:'DATE',job:'JOB',assigned:'PIC',deadline:'DEADLINE',item:'SERVICE',sku:'SKU',unit:'UNIT',price:'PRICE (RM)',notes:'PRICE NOTES',contact:'CONTACT',role:'ROLE'})[Symbol.for('unused')]||{};
+ $('tableArea').innerHTML=`<table><thead><tr>${cols.map(c=>`<th>${labels[c]||c.toUpperCase()}</th>`).join('')}<th>ACTIONS</th></tr></thead><tbody>${list.map(x=>`<tr>${cols.map(c=>`<td>${c==='status'?pill(x[c]):(c==='amount'||c==='price')?money(x[c]):esc(x[c]??'—')}</td>`).join('')}<td><button class="link" onclick="editRecord('${k}','${x.id}')">Edit</button> <button class="link" style="color:#a6534b" onclick="deleteRecord('${k}','${x.id}')">Delete</button></td></tr>`).join('')||`<tr><td colspan="${cols.length+1}" class="empty">Tiada rekod. Tekan Create New untuk menambah rekod.</td></tr>`}</tbody></table>`;
+}
+
+function createAutoQuotation(order){
+ const exists=rows('quotations').some(q=>q.orderId===order.id);
+ if(exists)return;
+ const amount=Number(order.amount||0);
+ setRows('quotations',[...rows('quotations'),{
+  id:id(),quoteNo:'QT-'+Date.now().toString().slice(-6),orderId:order.id,
+  orderCode:order.code,customer:order.customer,
+  description:`${order.product||'Tempahan'} · ${order.specification||'Spesifikasi belum ditetapkan'} · Qty ${order.quantity||1}`,
+  amount,status:'Perlu semakan harga',validUntil:'',created:new Date().toLocaleDateString('ms-MY')
+ }]);
+}
+function createAutoInvoice(job){
+ const order=rows('orders').find(o=>o.code && o.code===job.orderCode);
+ const source=order || null;
+ const already=rows('invoices').some(i=>i.jobId===job.id || (source && i.orderId===source.id));
+ if(already)return;
+ setRows('invoices',[...rows('invoices'),{
+  id:id(),invoiceNo:'INV-'+Date.now().toString().slice(-6),
+  jobId:job.id,orderId:source?.id||'',orderCode:job.orderCode||'',
+  customer:job.customer||source?.customer||'Pelanggan',
+  description:`Kerja printing siap: ${job.job}`,
+  amount:Number(source?.amount||0),status:'Unpaid',
+  dueDate:'',created:new Date().toLocaleDateString('ms-MY'),
+  note:source?.amount?'Dijana automatik apabila Printing Job ditandakan Siap.':'Jumlah perlu diisi sebelum invois dikeluarkan.'
+ }]);
+}
+function openForm(k,record=null){
+ const m=modules[k];if(!m||!m.fields.length){toast('Modul ini belum mempunyai borang rekod.');return}
+ const f=record||{},isOrder=k==='orders';
+ const fields=m.fields.map(([key,label,type,req,opts])=>`<label class="field ${type==='textarea'?'wide':''}">${label}${req?' *':''}${type==='select'?`<select name="${key}" ${req?'required':''}>${(opts||[]).map(v=>`<option ${f[key]===v?'selected':''}>${v}</option>`).join('')}</select>`:type==='textarea'?`<textarea name="${key}" rows="3">${esc(f[key]||'')}</textarea>`:`<input name="${key}" type="${type}" value="${esc(f[key]??(key==='quantity'?1:''))}" ${req?'required':''} ${type==='number'?'min="0"':''}>`}</label>`).join('');
+ $('modalRoot').innerHTML=`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2>${record?'Edit':'Create'} ${m.title}</h2><button class="close" onclick="closeModal()">×</button></div><form id="recordForm"><div class="modalbody"><div class="formgrid">${fields}</div></div><div class="modalfoot"><button type="button" class="btn" onclick="closeModal()">Cancel</button><button class="btn primary">Save Record</button></div></form></div></div>`;
+ $('recordForm').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));if(v.quantity)v.quantity=Number(v.quantity);if(v.amount)v.amount=Number(v.amount);if(record){
+ const updated={...record,...v};
+ setRows(k,rows(k).map(x=>x.id===record.id?updated:x));
+ if(k==='jobs' && v.status==='Siap' && record.status!=='Siap')createAutoInvoice(updated);
+ if(k==='orders' && record.status!==v.status)createAutoQuotation(updated);
+ toast('Rekod dikemas kini');
+ }else{
+ v.id=id();
+ if(k==='orders'){
+  v.code='SO-'+Date.now().toString().slice(-6);v.created=new Date().toLocaleDateString('ms-MY');
+  setRows(k,[...rows(k),v]);createAutoQuotation(v);
+ }else{
+  setRows(k,[...rows(k),v]);
+  if(k==='jobs' && v.status==='Siap')createAutoInvoice(v);
+ }
+ toast('Rekod berjaya disimpan');
+ }closeModal();};
+}
+function closeModal(){$('modalRoot').innerHTML=''}
+function editRecord(k,i){openForm(k,rows(k).find(x=>x.id===i))}
+function deleteRecord(k,i){if(confirm('Padam rekod ini? Tindakan ini tidak boleh dibatalkan.')){setRows(k,rows(k).filter(x=>x.id!==i));toast('Rekod dipadam')}}
+function resetAll(){if(confirm('Padam SEMUA data demo pada browser ini?')){data={};save();refresh();go('dashboard');toast('Data demo dipadam')}}
+function exportAll(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rcms-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Fail backup disediakan')}
+$('portalForm').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));v.id=id();v.code='SO-'+Date.now().toString().slice(-6);v.customer=v.name;v.status='Menunggu';v.created=new Date().toLocaleDateString('ms-MY');v.quantity=Number(v.quantity||1);setRows('orders',[...rows('orders'),v]);createAutoQuotation(v);e.target.reset();toast('Tempahan diterima. Sales Order dan Quotation dicipta: '+v.code);if(document.body.classList.contains('customer-mode')){setTimeout(()=>{document.getElementById('portal').scrollIntoView({behavior:'smooth'});},100)}else{go('dashboard')}}
+function enterAdmin(){document.body.classList.remove('customer-mode');$('authScreen').classList.add('hidden');$('appShell').classList.remove('hidden');$('side').classList.remove('hidden');go('dashboard')}
+$('loginForm').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));if(v.username.trim()==='admin'&&v.password==='RCMS2026!'){sessionStorage.setItem('rcms_admin_demo','yes');enterAdmin();toast('Selamat datang ke RCMS')}else{toast('Nama pengguna atau kata laluan tidak tepat')}};
+$('publicOrderBtn').onclick=()=>{$('authScreen').classList.add('hidden');$('appShell').classList.remove('hidden');document.body.classList.add('customer-mode');$('side').classList.add('hidden');go('portal')};
+$('logoutBtn').onclick=()=>{sessionStorage.removeItem('rcms_admin_demo');document.body.classList.remove('customer-mode');$('appShell').classList.add('hidden');$('authScreen').classList.remove('hidden');toast('Anda telah log keluar')};
+refresh();if(sessionStorage.getItem('rcms_admin_demo')==='yes'){enterAdmin()}else{$('appShell').classList.add('hidden')}
+</script></body></html>
